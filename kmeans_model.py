@@ -7,7 +7,7 @@
 #%matplotlib notebook
 
 
-# In[2]:
+# In[1]:
 
 
 import pandas as pd
@@ -17,53 +17,43 @@ import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
 
 
-# In[3]:
+# In[2]:
 
 
 from sklearn.model_selection import train_test_split
 from sklearn import metrics
 
 
-# In[4]:
+# In[3]:
 
 
 # Upload your data as a csv file and load it as a data frame 
 dataset = pd.read_csv("data.csv" , encoding= 'unicode_escape').dropna()
 dataset.head()
 dataset.describe()
+
+
+# In[4]:
+
+
+# producing a column 
+dataset['command_price'] = dataset.Quantity * dataset.UnitPrice
+dataset['command_price'] = dataset['command_price'].astype(int)
 dataset['InvoiceDate'] = pd.to_datetime(dataset['InvoiceDate'])
+dataset['InvoiceDate'] = dataset['InvoiceDate'].dt.to_period('M')
 
 
 # In[5]:
 
 
-dataset['command_price'] = dataset.Quantity * dataset.UnitPrice
-dataset['command_price'] = dataset['command_price'].astype(int)
-dataset['InvoiceDate'] = dataset['InvoiceDate'].dt.to_period('M')
-dataset['InvoiceDate']
-#dataset
+# select the features 
+selected_atributes = [ 'InvoiceNo' , 'StockCode' , 'CustomerID' , 'Country' , 'command_price']
 
 
 # In[6]:
 
 
-#selected_atributes = [ 'InvoiceNo' , 'StockCode' , 'CustomerID' , 'Country' , 'InvoiceDate' , 'command_price']
-selected_atributes = [ 'InvoiceNo' , 'StockCode' , 'CustomerID' , 'Country' , 'command_price']
-
-
-# In[7]:
-
-
-#countries = dict((x, ind) for ind , x in enumerate(dataset.Country.unique()) )
-
-#countries 
-#rcountries
-#dataset.Country.unique()
-
-
-# In[8]:
-
-
+# clean data and formating 
 dataset = dataset[ dataset['CustomerID'].notna() ] 
 dataset = dataset[ dataset['StockCode'].notna() ] 
 dataset = dataset[ dataset['Quantity'] > 0 ] 
@@ -83,33 +73,33 @@ dataset['StockCode'] = dataset.StockCode.astype(int)
 # countries = {}
 # for ind , x in enumerate(dataset.Country.unique()):
 #     countries[x]=ind
-countries  = dict((x, ind) for ind , x in enumerate(dataset.Country.unique()) )
-rcountries = dict(( x, ind) for ind , x in countries.items() )
+countries =  dict((x, ind) for ind , x in enumerate(dataset.Country.unique()) )
+rcountries =  dict(( x, ind) for ind , x in countries.items() )
 dataset['Country'] = dataset['Country'].map(countries)
+
+
+# In[7]:
+
+
+X = dataset[selected_atributes]
+# X
+
+
+# In[8]:
+
+
+# X.isnull().sum()
 
 
 # In[9]:
 
 
-X = dataset[selected_atributes]
-X
+# Visualize the correlation your data and identify variables for further analysis
+# g = sns.PairGrid(X)
+# g.map(sns.scatterplot)
 
 
 # In[10]:
-
-
-X.isnull().sum()
-
-
-# In[11]:
-
-
-# Visualize the correlation your data and identify variables for further analysis
-g = sns.PairGrid(X)
-g.map(sns.scatterplot)
-
-
-# In[12]:
 
 
 # def find_best_clusters(df, maximum_K):
@@ -129,22 +119,24 @@ g.map(sns.scatterplot)
 #     return clusters_centers, k_values
 
 
-# In[13]:
+# In[11]:
 
 
-#find_best_clusters(X, 12)
+# get training data 
 X_train, X_test, y_train, y_test = train_test_split(X, X, test_size=0.3, random_state=42)
 
 
-# In[14]:
+# In[12]:
 
 
+# get optimal k number of clusters
 # clusters_centers, k_values = find_best_clusters(X, 12)
 
 
-# # In[15]:
+# In[13]:
 
 
+# function to visualise the optimal k data
 # def generate_elbow_plot(clusters_centers, k_values):
     
 #     figure = plt.subplots(figsize = (12, 6))
@@ -155,15 +147,17 @@ X_train, X_test, y_train, y_test = train_test_split(X, X, test_size=0.3, random_
 #     plt.show()
 
 
-# # In[16]:
+# In[14]:
 
 
+#show the plots of optimal k
 # generate_elbow_plot(clusters_centers, k_values)
 
 
-# # In[17]:
+# In[15]:
 
 
+# transform to numeric data 
 from sklearn.preprocessing import StandardScaler
 scaler = StandardScaler()
 
@@ -173,23 +167,35 @@ scaled_data = scaler.transform(X_train)
 scaled_data
 
 
-# In[18]:
+# In[16]:
 
 
+# from the plot we see that k=3 is the optimal k 
+# train kmeans model
 kmeans_model = KMeans(n_clusters = 3)
 
 kmeans_model.fit(scaled_data)
 
 
-# In[19]:
+# In[17]:
 
+
+# get labels of model
 
 X_train["clusters"] = kmeans_model.labels_
 
 X_train.head()
 
 
-# In[26]:
+# In[18]:
+
+
+# plt.scatter(X_train["Country"], 
+#             X_train["CustomerID"],
+#             c = X_train["clusters"])
+
+
+# In[19]:
 
 
 # plt.scatter(X_train["StockCode"], 
@@ -198,7 +204,9 @@ X_train.head()
 # plt.scatter(X_train["Country"], 
 #             X_train["CustomerID"],
 #             c = X_train["clusters"])
-#get_ipython().run_line_magic('matplotlib', 'widget')
+
+## show the 3d plot of cluster
+# get_ipython().run_line_magic('matplotlib', 'widget')
 fig = plt.figure()
 ax = fig.add_subplot( 111 , projection='3d')
 ax.scatter(X_train["Country"], 
@@ -209,21 +217,21 @@ plt.show()
 #ee.show()
 
 
+# In[20]:
+
+
+# y_pred = kmeans_model.predict(X_test)
+
+
+# In[21]:
+
+
+# y_pred
+# print( y_pred )
+
+
 # In[ ]:
 
 
-#y_pred = kmeans_model.predict(X_test)
 
-
-# In[ ]:
-
-
-#y_pred
-#print( y_pred )
-
-
-# In[ ]:
-
-
-#print("Accuracy:",metrics.accuracy_score(y_test, y_pred))
 
