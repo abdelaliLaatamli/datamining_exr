@@ -83,8 +83,8 @@ dataset['StockCode'] = dataset.StockCode.astype(int)
 # countries = {}
 # for ind , x in enumerate(dataset.Country.unique()):
 #     countries[x]=ind
-countries =  dict((x, ind) for ind , x in enumerate(dataset.Country.unique()) )
-rcountries =  dict(( x, ind) for ind , x in countries.items() )
+countries  = dict((x, ind) for ind , x in enumerate(dataset.Country.unique()) )
+rcountries = dict(( x, ind) for ind , x in countries.items() )
 dataset['Country'] = dataset['Country'].map(countries)
 
 
@@ -112,21 +112,21 @@ g.map(sns.scatterplot)
 # In[12]:
 
 
-def find_best_clusters(df, maximum_K):
+# def find_best_clusters(df, maximum_K):
     
-    clusters_centers = []
-    k_values = []
+#     clusters_centers = []
+#     k_values = []
     
-    for k in range(1, maximum_K):
+#     for k in range(1, maximum_K):
         
-        kmeans_model = KMeans(n_clusters = k)
-        kmeans_model.fit(df)
+#         kmeans_model = KMeans(n_clusters = k)
+#         kmeans_model.fit(df)
         
-        clusters_centers.append(kmeans_model.inertia_)
-        k_values.append(k)
+#         clusters_centers.append(kmeans_model.inertia_)
+#         k_values.append(k)
         
     
-    return clusters_centers, k_values
+#     return clusters_centers, k_values
 
 
 # In[13]:
