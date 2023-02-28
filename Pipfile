@@ -13,6 +13,7 @@ graphviz = "*"
 pydotplus = "*"
 seaborn = "*"
 ipympl = "*"
+nbconvert = "*"
 
 [dev-packages]
 
