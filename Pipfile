@@ -12,6 +12,7 @@ matplotlib = "*"
 graphviz = "*"
 pydotplus = "*"
 seaborn = "*"
+ipympl = "*"
 
 [dev-packages]
 
